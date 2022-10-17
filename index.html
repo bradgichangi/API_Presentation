@@ -4,23 +4,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script defer src="index.js"></script>
-    <title>Document</title>
+    <title>Pokemon</title>
+    <script src="index.js" defer></script>
+    <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-    <form action="http://localhost:3000/pokemon" method="POST" id="form1">
-        <label for="fname">name of pokemon POST</label>
-        <input type="text" id="fname" name="name"><br><br>
-    </form>
-    <button type="submit" form="form1" value="Submit">Submit</button>
-
-    <form method="POST" action="http://localhost:3000/pokemon?_method=DELETE">
-        <label for="fname">name of pokemon DELETE</label>
-        <input type="text" id="fname" name="name"><br><br>
-        <button type="submit">Delete</button>
-      </form>
+    <header>
+        <a href="/"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/International_Pok%C3%A9mon_logo.svg/2560px-International_Pok%C3%A9mon_logo.svg.png" alt="pokemon-logo"></a>
+    </header>
+    <section>
+        <form id="form" method="GET" action="localhost:3000">
+            <input id="input" type="text">
+            <div id="btn-group">
+                <button id="search-btn" type="submit">SEARCH</button>
+                <button id="del-btn" type="submit">DELETE</button>
+                <button id="up-btn" type="submit">UPDATE</button>
+                <button id="add-btn" type="submit">ADD</button>
+            </div>
+        </form>
+    </section>
+    <section id="out">
         
-    
+    </section>
     
 </body>
 </html>
