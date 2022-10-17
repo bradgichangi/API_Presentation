@@ -1,5 +1,6 @@
 const express =  require('express');
 const app = express();
+const methodOverride = require('method-override')
 const port = process.env.PORT || 3000;
 //const cors = require('cors')
 
@@ -7,60 +8,95 @@ const callPokemons = require('./fetchPokemons');
 
 app.use(express.json())
 app.use(express.urlencoded());
+app.use(methodOverride('_method'))
 //app.use(cors);
 
-const games = [
-    callPokemons.callPokemons()
-]
+let allPokemonsGlocal;
+
+async function allPokemonsGlocalFunc () {
+    allPokemonsGlocal = await callPokemons.callPokemons();
+    return allPokemonsGlocal;
+}
+
+allPokemonsGlocalFunc();
 
 app.get('/', async (req, res)=> {
 
-    const savedData = await callPokemons.callPokemons()
-
-    console.log('saveddata = ' + savedData);
-    res.send(await callPokemons.callPokemons());
+    const savedData = allPokemonsGlocal;
+    const poke = await callPokemons.getInfo('ditto');
+    
+    res.send(savedData);
 });
 
-app.get('/pokemon/:list', (req, res)=> {
 
+app.get('/pokemon/:name', async (req, res)=> {
+
+    const allPokemons = await callPokemons.callPokemons();
+    const searchedPoke = await callPokemons.getInfo(req.params.name);
+    //const pokeMatch = allPokemons.find(poke=> poke.name === req.params.name)
+
+    //console.log(searchedPoke);
+    //console.log(pokeMatch);
+    
+    //if(pokeMatch) return res.status(404).send('game does not exist')
+    res.send(searchedPoke);
 });
 
-app.get('/pokemon/:name', (req, res)=> {
-    const game = games.find(g=> g.id === parseInt(req.params.id))
-    if(!game) return res.status(404).send('game does not exist')
-    res.send(game);
-});
 
 app.post('/pokemon', (req, res)=> {
-    // const game = {
-    //     id: games.length + 1,
-    //     title: req.body.title
-    // }
 
-    // console.log(req.body);
+    const newPoke = {
+        name: req.body.name,
+        img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        "type": [
+          "grass",
+          "poison"
+        ]
+    }
 
-    // games.push(game);
-    // res.send(games);
+    allPokemonsGlocal.push(newPoke);
+    res.send(allPokemonsGlocal);
 });
 
-app.put('/pokemon/:id', (req, res)=> {
-    // const game = games.find(g=> g.id === parseInt(req.params.id))
-    // if(!game) return res.status(404).send('game does not exist')
-   
-    // game.title = req.body.title;
-    // res.send(games);
+app.put('/pokemon/:name', (req, res)=> {
+
+    console.log(req.params.name);
+
+    const pokeToUpdate = {
+        name: req.params.name,
+        img: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png",
+        "type": [
+          "grass",
+          "updateThis"
+        ]
+    }
+
+    const pokemonToChange = allPokemonsGlocal
+    .find(poke=> poke.name === req.params.name)
+    if(!pokemonToChange) return res.status(404).send('this pokemon does not exist')
+
+    const index = allPokemonsGlocal.indexOf(pokemonToChange);
+    console.log(index);
+    allPokemonsGlocal[index] = pokeToUpdate;
+
+    res.send(allPokemonsGlocal);
 
 });
 
-app.delete('/pokemon/:id', (req, res)=> {
-    // const game = games.find(g=> g.id === parseInt(req.params.id))
-    // if(!game) return res.status(404).send('game does not exist')
-   
-    // console.log(game);
-    // const index = games.indexOf(game);
-    // games.splice(index, 1);
+app.delete('/pokemon/:name', async (req, res)=> {
 
-    // res.send(game);
+    // console.log(req.params.name);
+    // console.log(`&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&`);
+    // console.log(allPokemonsGlocal);
+
+    const pokemonToDelete = allPokemonsGlocal
+    .find(poke=> poke.name === req.params.name)
+    if(!pokemonToDelete) return res.status(404).send('this pokemon does not exist')
+   
+    const index = allPokemonsGlocal.indexOf(pokemonToDelete);
+    allPokemonsGlocal.splice(index, 1);
+
+    res.send(allPokemonsGlocal);
 
 });
 
